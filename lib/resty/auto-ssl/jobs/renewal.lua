@@ -206,7 +206,21 @@ local function renew(premature, auto_ssl_instance)
 end
 
 function _M.spawn(auto_ssl_instance)
-  local ok, err = ngx.timer.at(auto_ssl_instance:get("renew_check_interval"), renew, auto_ssl_instance)
+  -- First spawn will be start at a specific time of day if specified.
+  -- Otherwise, start at the next renew interval.
+  local interval = auto_ssl_instance:get("renew_check_start_time")
+  if interval >= 0 then
+    interval = interval % 86400 - ngx.now() % 86400
+    if interval < 0 then
+      interval = interval + 86400
+    end
+  else
+    interval = auto_ssl_instance:get("renew_check_interval")
+  end
+
+  ngx.log(ngx.NOTICE, "auto-ssl: renew job is stating in ", interval, " seconds.")
+
+  local ok, err = ngx.timer.at(interval, renew, auto_ssl_instance)
   if not ok then
     ngx.log(ngx.ERR, "auto-ssl: failed to create timer: ", err)
     return

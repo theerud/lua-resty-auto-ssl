@@ -44,6 +44,12 @@ function _M.new(options)
     options["renew_check_interval"] = 86400 -- 1 day
   end
 
+  -- Start time of first renew job in seconds since midnight in UTC
+  -- For example, 9000 = 02:30 UTC (2*3600 + 30*60) = 09:30 ICT
+  if not options["renew_check_start_time"] then
+    options["renew_check_start_time"] = -1 -- unspecified
+  end
+
   if not options["hook_server_port"] then
     options["hook_server_port"] = 8999
   end
