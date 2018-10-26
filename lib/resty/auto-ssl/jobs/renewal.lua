@@ -83,7 +83,11 @@ local function renew_check_cert(auto_ssl_instance, storage, domain)
   -- If expiry date is found, we attempt renewal if it's within 30 days.
   if cert["expiry"] then
     local now = ngx.now()
-    if now + (30 * 24 * 60 * 60) < cert["expiry"] then
+    -- Randomly renew certificates between 15-30 days before expiry.
+    -- This should spread out certificates expiring on the same day to get
+    -- renewal on different days.
+    local r = math.random(15, 30) * 24 * 3600
+    if now + r < cert["expiry"] then
       ngx.log(ngx.NOTICE, "auto-ssl: expiry date is more than 30 days out, skipping renewal: ", domain)
       renew_check_cert_unlock(domain, storage, local_lock, distributed_lock_value)
       return
