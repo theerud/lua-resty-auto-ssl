@@ -182,6 +182,18 @@ How frequently (in seconds) all of the domains should be checked for certificate
 auto_ssl:set("renew_check_interval", 172800)
 ```
 
+### `renew_check_start_time`
+*Default:* `-1`
+
+Time of day in seconds since 00:00 UTC when domain renewal check job will be first scheduled. If not specified or has negative value, the job will start after number of seconds defined by `renew_check_interval` option.
+
+*Example:*
+
+```lua
+-- Start renew check job at 02:30 UTC (2*3600 + 30*60 = 9000)
+auto_ssl:set("renew_check_start_time", 9000)
+```
+
 ### `storage_adapter`
 *Default:* `resty.auto-ssl.storage_adapters.file`<br>
 *Options:* `resty.auto-ssl.storage_adapters.file`, `resty.auto-ssl.storage_adapters.redis`
